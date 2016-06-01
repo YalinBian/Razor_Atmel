@@ -88,7 +88,21 @@ Promises:
 */
 void UserAppInitialize(void)
 {
-  /*test for Github*/
+  /* All discrete LEDs to off */
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  
+  /* Backlight to white */  
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
+  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -137,8 +151,59 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-    
-} /* end UserAppSM_Idle() */
+    static u8 u8Counter = 0;
+   static u16 u16BlinkCount = 0;
+   u16BlinkCount++;
+  if(u16BlinkCount == 100)
+  {
+    u16BlinkCount = 0;
+    switch(u8Counter)
+    {
+    case 0:
+      LedOn(RED);
+      break;
+    case 1 : 
+      LedOn(ORANGE);
+      break;
+    case 2 : 
+      LedOn(YELLOW);
+      LedOff(RED);
+      break;
+    case 3 : 
+      LedOn(GREEN);
+      LedOff(ORANGE);
+      break;
+    case 4 : 
+      LedOn(CYAN);
+      LedOff(YELLOW);
+      break;
+    case 5 :
+      LedOn(BLUE);
+      LedOff(GREEN);
+      break;
+    case 6 : 
+      LedOn(PURPLE);
+      LedOff(CYAN);
+      break;
+    case 7 :
+      LedOn(WHITE);
+      LedOff(BLUE);
+      break;
+    case 8:
+      LedOff(PURPLE);
+      break;
+    case 9:
+      LedOff(WHITE);
+      break;
+    }
+    if(u8Counter<10)
+    {
+      u8Counter++;
+    }
+    else
+      u8Counter = 0;
+  }
+ }      /* end UserAppSM_Idle() */
      
 
 /*-------------------------------------------------------------------------------------------------------------------*/
