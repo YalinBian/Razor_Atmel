@@ -88,6 +88,14 @@ Promises:
 */
 void UserAppInitialize(void)
 {
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
   /*test for Github*/
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -137,7 +145,64 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-    
+   static bool bYellowOn = FALSE;
+   static LedRateType LedBlinkFrequency[] = {LED_8HZ, LED_4HZ, LED_2HZ, LED_1HZ};
+   static u8 rate = 0;
+   /* if button1 is pressed,turn on the purple led*/
+   if(IsButtonPressed(BUTTON1))
+   {
+     LedOn(PURPLE);
+   }
+   /* else turn off it*/
+   else
+   {
+     LedOff(PURPLE);
+   }
+   /* if button2 is pressed,turn on the blue led*/
+   if(IsButtonPressed(BUTTON2))
+   {
+     LedOn(BLUE);
+   }
+   /* else turn off it*/
+   else
+   {
+     LedOff(BLUE);
+   }
+   /* if button0 was pressed,turn on the yellow led*/
+   if(WasButtonPressed(BUTTON0))
+   {
+     ButtonAcknowledge(BUTTON0);
+     rate = 0;
+     /*if the yellow led is already on,turn off it*/
+     if(bYellowOn)
+     {
+       bYellowOn = FALSE;
+       LedOff(YELLOW);
+     }
+     /*else start turnning on the yellow led*/
+     else
+     {
+       bYellowOn = TRUE;
+       LedOn(YELLOW);
+     }
+   }
+  /*if button3 was pressed and the yellow led is already turned on,then change the blink rate*/
+   if(WasButtonPressed(BUTTON3))
+   {
+     ButtonAcknowledge(BUTTON3);
+   /*use bYellowOn to make sure the yellow led is already turned on*/
+     if(bYellowOn)
+     {
+       LedOff(YELLOW);
+       LedBlink(YELLOW,LedBlinkFrequency[rate]);
+       rate++;
+       if(rate == 4)
+       {
+         rate = 0;
+       }
+     }
+   }
+   
 } /* end UserAppSM_Idle() */
      
 
