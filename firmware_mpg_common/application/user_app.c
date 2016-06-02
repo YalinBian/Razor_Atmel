@@ -64,6 +64,8 @@ static u32 UserApp_u32Timeout;                      /* Timeout counter used acro
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
+#define cycle_long_time  500;
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Public functions                                                                                                   */
@@ -88,6 +90,8 @@ Promises:
 */
 void UserAppInitialize(void)
 {
+  PWMAudioSetFrequency(BUZZER1, 500);
+  
   /*test for Github*/
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -137,8 +141,52 @@ State Machine Function Definitions
 /* Wait for a message to be queued */
 static void UserAppSM_Idle(void)
 {
-    
-} /* end UserAppSM_Idle() */
+  /* use buzzer1 to play the music ¡°Mary had a little lamb¡± */
+  static u32 u32FrequencyTable[] = {330,294,262,294,330,330,330,0,
+                                    294,294,294,0,
+                                    330,392,392,0,
+                                    330,294,262,294,330,330,330,0,
+                                    330,294,294,330,294,262,0};
+  static u8 u8Count = 0;
+  static bool bBuzzerOn = FALSE;
+  static u8 u8LongTime = cycle_long_time;
+  u8LongTime--;
+  if(u8LongTime ==0)
+  { 
+    if(bBuzzerOn)
+    {
+      PWMAudioOff(BUZZER1);
+      u8LongTime = cycle_long_time;
+      PWMAudioSetFrequency(BUZZER1,u32FrequencyTable[u8Count]);
+      PWMAudioOn(BUZZER1);
+      u8Count++;
+      if(u8Count==31)
+      {
+        u8Count = 0;
+      }
+    }
+  }
+  /*if button0 is pressed,start the music or suspend the music*/
+  if(WasButtonPressed(BUTTON0))
+  {
+    ButtonAcknowledge(BUTTON0);
+    if(bBuzzerOn)
+    {
+      bBuzzerOn = FALSE;
+      PWMAudioOff(BUZZER1);
+    }
+    else
+    {
+      bBuzzerOn = TRUE;
+    }
+  }
+  /*if button1 is pressed,the music start from the beginning*/
+  if(WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    u8Count=0;
+  }
+}/* end UserAppSM_Idle() */
      
 
 /*-------------------------------------------------------------------------------------------------------------------*/
